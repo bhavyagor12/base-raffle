@@ -12,6 +12,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@types/node": "^24.6.0",
     "hardhat": "^3.0.6",
     "ts-node": "^10.9.2",

@@ -1,6 +1,7 @@
 import { config as dotenv } from "dotenv";
 dotenv();
 import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 
 const { PRIVATE_KEY, BASE_SEPOLIA_RPC } = process.env;
