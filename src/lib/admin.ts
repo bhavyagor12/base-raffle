@@ -9,10 +9,10 @@ type RequestDrawArgs = {
   is_testnet?: boolean;
 };
 
-let privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY as `0x{string}`;
+const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY as `0x{string}`;
 
-let testnet_rpc = "https://sepolia.base.org";
-let mainnet_rpc = "https://mainnet.base.org";
+const testnet_rpc = "https://sepolia.base.org";
+const mainnet_rpc = "https://mainnet.base.org";
 
 const testnetPublicClient = createPublicClient({
   chain: baseSepolia,

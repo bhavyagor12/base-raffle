@@ -3,7 +3,7 @@ export const CONTRACT_ADDRESS =
   "0xf9d2C87DC0dD7c1a72Bcd525569Eb7433F843431" as const;
 export const ADMIN_ADDRESS = "" as const;
 
-export const ADMIN_FIDS = [8010];
+export const ADMIN_FIDS = [8010, 435464];
 
 export const RAFFLE_ABI = [
   {
