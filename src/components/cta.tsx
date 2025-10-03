@@ -1,11 +1,24 @@
 import { useRaffle } from "@/hooks/useRaffle";
 import { Spinner } from "./spinner";
-import { ADMIN_FIDS, Phase } from "@/lib/contract";
+import {
+  ADMIN_FIDS,
+  CHAIN_ID,
+  CONTRACT_ADDRESS,
+  Phase,
+  RAFFLE_ABI,
+} from "@/lib/contract";
 import { Button } from "./ui/button";
 import { useMiniApp } from "@neynar/react";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
 import { WalletCTA } from "./wallet-cta";
+import {
+  Transaction,
+  TransactionButton,
+  TransactionStatus,
+  TransactionToast,
+} from "@coinbase/onchainkit/transaction";
+import { ContractFunctionParameters } from "viem";
 
 export function CTASection() {
   const { isSDKLoaded, context } = useMiniApp();
@@ -89,13 +102,25 @@ export function CTASection() {
               win the <span className="font-bold">Give Away.</span>
             </p>
           </div>
-          <Button
-            className="w-[80%] bg-white text-base-blue mt-8 hover:bg-white"
-            onClick={() => enter()}
-            disabled={txPending}
+          <Transaction
+            isSponsored={true}
+            chainId={CHAIN_ID}
+            calls={[
+              {
+                abi: RAFFLE_ABI,
+                address: CONTRACT_ADDRESS,
+                functionName: "enter",
+                args: [],
+              } as ContractFunctionParameters,
+            ]}
           >
-            {txPending ? <Spinner label="Submitting" /> : "Enter the Giveaway"}
-          </Button>
+            <TransactionButton
+              className="w-full bg-white text-base-blue mt-8 hover:bg-white"
+              text="Enter the giveaway"
+            />
+            <TransactionStatus />
+            <TransactionToast />
+          </Transaction>
         </CardContent>
       </Card>
     );

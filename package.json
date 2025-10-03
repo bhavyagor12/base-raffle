@@ -12,6 +12,7 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true --prod"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^1.1.1",
     "@farcaster/miniapp-wagmi-connector": "^1.0.0",
     "@neynar/react": "^1.2.13",
     "@radix-ui/react-slot": "^1.2.3",
