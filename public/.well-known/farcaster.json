@@ -1,17 +1,17 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjE0NTgyLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4RTc0NzUyQTZlQTgyOWJmMEY0N0Q4ODMzRjVjMEY5MDMwYWIyMTU1MyJ9",
-    "payload": "eyJkb21haW4iOiJmYXJzZWFyY2gubWVnYWJ5dGUweC54eXoifQ",
-    "signature": "MHgwMmRlZmJkZjIxZTE2OGE4ZTdlOWJjNjA3M2MwOGRmMWU1ZDA1NDM3NWVmOWE5NDZmMmM3MzcyMWM1NDZlNTI3NDM3MTVlNWJiZmRhMDc0YmI4YTdjNGYwYTBiNjIxZmJkYWU2ZGI1M2I1OGUzYzY5YjZlOGNlOTZkYzQwNjRkOTFi"
+    "header": "eyJmaWQiOjQzNTQ2NCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDNkOTdiMDk2MDU2NzM0NTdiMjVCZWI0QjEyOTAxY0NDZEMwMUNFMWIifQ",
+    "payload": "eyJkb21haW4iOiJiYXNlZC1pbmRpYS1naXZlYXdheS52ZXJjZWwuYXBwIn0",
+    "signature": "MHhmZjNiZDcwNmFhYTljODQyY2JjODFiMjAyMGZhODQ3ODJlNGNlOTc1NWU3ZjYyYWIzMDM3NDU5Y2E1M2U2YTM4NzM3NmY0NGMwYWZiMmI5NDA5ZmY1Njk1N2M3ZDI0ZDEzMjZkZWNiZThlNzYzNjhmNDk1OWQyODM2NzFlMjVhMTFi"
   },
   "frame": {
     "version": "1",
     "name": "BATW India Giveaway",
-    "iconUrl": "https://farsearch.megabyte0x.xyz/primary_logo.png",
-    "homeUrl": "https://farsearch.megabyte0x.xyz",
-    "imageUrl": "https://farsearch.megabyte0x.xyz/primary_logo.png",
+    "iconUrl": "https://based-india-giveaway.vercel.app/base_blue.svg",
+    "homeUrl": "https://based-india-giveaway.vercel.app",
+    "imageUrl": "https://based-india-giveaway.vercel.app/base_blue.svg",
     "buttonTitle": "BATW India Giveaway",
-    "splashImageUrl": "https://farsearch.megabyte0x.xyz/primary_logo.png",
+    "splashImageUrl": "https://based-india-giveaway.vercel.app/base_blue.svg",
     "splashBackgroundColor": "#0000FF",
     "webhookUrl": "",
     "description": "",
