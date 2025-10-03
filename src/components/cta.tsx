@@ -1,21 +1,31 @@
 import { useRaffle } from "@/hooks/useRaffle";
 import { useAccount } from "wagmi";
 import { Spinner } from "./spinner";
-import { CHAIN_ID, Phase } from "@/lib/contract";
+import { ADMIN_FIDS, CHAIN_ID, Phase } from "@/lib/contract";
 import { Button } from "./ui/button";
 import { Callout } from "./callout";
+import { useMiniApp } from "@neynar/react";
 
 export function CTASection() {
+  const { isSDKLoaded, context } = useMiniApp();
   const { chainId } = useAccount();
   const {
     isConnected,
-    // phase,
+    phase,
     alreadyEntered,
-    // isWinner,
+    isWinner,
     enter,
     loading,
     txPending,
   } = useRaffle();
+
+  if (!isSDKLoaded || !context) return null;
+
+  const { user } = context;
+
+  if (!user) return null;
+
+  if (ADMIN_FIDS.includes(user.fid)) return null; // dont allow admin
 
   if (loading)
     return (
@@ -35,8 +45,6 @@ export function CTASection() {
       </p>
     );
   }
-  let isWinner = false;
-  let phase = Phase.Drawn;
 
   if (phase === Phase.Enter) {
     if (alreadyEntered)

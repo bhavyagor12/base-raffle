@@ -40,14 +40,14 @@ contract Raffle50Test is Test {
 
     function test_Revert_When_NotEnoughEntrants() public {
         _addEntrants(10);
-        vm.expectRevert(bytes("need >= 50 entrants"));
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        vm.expectRevert(bytes("not enough entrants"));
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
     }
 
     function test_HappyPath_Draw_And_Select_50_Winners() public {
         _addEntrants(300);
 
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
         uint256 reqId = raffle.vrfRequestId();
         assertEq(uint8(raffle.phase()), uint8(Raffle50.Phase.DrawRequested));
 
@@ -58,7 +58,6 @@ contract Raffle50Test is Test {
 
         assertEq(uint8(raffle.phase()), uint8(Raffle50.Phase.Drawn));
         assertEq(raffle.randomSeed(), words[0]);
-        assertEq(raffle.winnersCount(), 50);
 
         address[] memory winners = raffle.getWinners();
         for (uint256 i = 0; i < winners.length; i++) {
@@ -72,7 +71,7 @@ contract Raffle50Test is Test {
     function test_Claim_By_Winner_Succeeds() public {
         _addEntrants(300);
 
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
         uint256 reqId = raffle.vrfRequestId();
 
         uint256[] memory words = new uint256[](1);
@@ -94,7 +93,7 @@ contract Raffle50Test is Test {
     function test_Claim_By_NonWinner_Reverts() public {
         _addEntrants(300);
 
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
         uint256 reqId = raffle.vrfRequestId();
 
         uint256[] memory words = new uint256[](1);
@@ -110,15 +109,15 @@ contract Raffle50Test is Test {
 
     function test_Request_Only_In_Enter_Phase() public {
         _addEntrants(300);
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
 
         vm.expectRevert(bytes("wrong phase"));
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
     }
 
     function test_Enter_After_DrawRequested_Reverts() public {
         _addEntrants(300);
-        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF);
+        raffle.requestRandomness(KEYHASH, GASLIMIT, CONF,50);
 
         vm.prank(address(0x1234));
         vm.expectRevert(bytes("wrong phase"));

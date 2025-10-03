@@ -1,11 +1,7 @@
-export const CHAIN_ID = 84532;
-export const CONTRACT_ADDRESS =
-  "0xf9d2C87DC0dD7c1a72Bcd525569Eb7433F843431" as const;
-export const ADMIN_ADDRESS = "" as const;
+import { network } from "hardhat";
+import { parseEther } from "viem";
 
-export const ADMIN_FIDS = [8010];
-
-export const RAFFLE_ABI = [
+const ABI = [
   {
     inputs: [
       {
@@ -530,8 +526,80 @@ export const RAFFLE_ABI = [
   },
 ];
 
-export enum Phase {
-  Enter = 0,
-  DrawRequested = 1,
-  Drawn = 2,
+async function main() {
+  const { viem } = await network.connect({
+    network: "baseSepolia",
+    chainType: "l2",
+  });
+
+  const publicClient = await viem.getPublicClient();
+  const [deployer, alice, bob] = await viem.getWalletClients();
+  const RAFFLE_ADDR = "0x753eB7EAd1f670E8Fe4F67576f20f709A643Ac67";
+
+  // deployer.sendTransaction({
+  //   to: RAFFLE_ADDR,
+  //   value: parseEther("0.001"),
+  // });
+  //
+  // const balance = await publicClient.readContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "getBalance",
+  // });
+  //
+  // console.log("Contract balance:", balance, "ETH");
+  //
+  // // Entrants join
+  // console.log("Alice entering...");
+  // await alice.writeContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "enter",
+  // });
+  // //
+  // console.log("Bob entering...");
+  // await bob.writeContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "enter",
+  // });
+  //
+  // const entrantsCount = await publicClient.readContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "entrantsCount",
+  // });
+  // const phase = await publicClient.readContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "phase",
+  // });
+  // console.log("Phase:", phase);
+  // console.log("Entrants:", entrantsCount);
+  //
+  // const callbackGasLimit = 500000;
+  // const requestConfirmations = 3;
+  // const winnersCount = 1;
+  //
+  // console.log("Deployer requesting randomness...");
+  //
+  // const txHash = await deployer.writeContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "requestRandomness",
+  //   args: [callbackGasLimit, requestConfirmations, winnersCount],
+  // });
+  // console.log("Randomness requested, tx:", txHash);
+  // NOTE: VRF fulfill happens async; you can check later:
+  const winners = await publicClient.readContract({
+    address: RAFFLE_ADDR,
+    abi: ABI,
+    functionName: "getWinners",
+  });
+  console.log("Winners:", winners);
 }
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

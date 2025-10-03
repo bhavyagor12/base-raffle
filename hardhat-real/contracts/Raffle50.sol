@@ -9,24 +9,21 @@ pragma solidity ^0.8.24;
  * - Safe: Ownable admin, ReentrancyGuard, no external transfers in claim()
  */
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 
 // Chainlink VRF v2.5 (direct funding)
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
-import {IVRFCoordinatorV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol";
+import {VRFV2PlusWrapperConsumerBase} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
 
-contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
+contract Raffle50 is ReentrancyGuard, VRFV2PlusWrapperConsumerBase, ConfirmedOwner {
     enum Phase {
         Enter,
         DrawRequested,
         Drawn
     }
 
-    uint256 public vrfSubId;
-    uint16 public constant MAX_WINNERS = 50;
     uint16 public constant MAX_ENTRANTS = 300;
-
-    IVRFCoordinatorV2Plus public immutable coordinator;
 
     Phase public phase = Phase.Enter;
     address[] public entrants;
@@ -36,6 +33,7 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
     address[] public winners;
     uint256 public randomSeed;
     uint256 public vrfRequestId;
+    uint16 public winnersTarget;
 
     event Enter(address indexed user);
     event DrawRequested(uint256 requestId);
@@ -48,9 +46,7 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
         _;
     }
 
-    constructor(address _coordinator) VRFConsumerBaseV2Plus(_coordinator) {
-        coordinator = IVRFCoordinatorV2Plus(_coordinator);
-    }
+    constructor(address _wrapper) VRFV2PlusWrapperConsumerBase(_wrapper) ConfirmedOwner(msg.sender) {}
 
     function isEntrant(address a) external view returns (bool) {
         return entered[a];
@@ -62,10 +58,6 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
 
     function entrantsCount() external view returns (uint256) {
         return entrants.length;
-    }
-
-    function winnersCount() external view returns (uint256) {
-        return winners.length;
     }
 
     function getWinners() external view returns (address[] memory) {
@@ -81,31 +73,26 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
         emit Enter(msg.sender);
     }
 
-    function requestRandomness(bytes32 keyHash, uint32 callbackGasLimit, uint16 requestConfirmations)
+    function requestRandomness(uint32 callbackGasLimit, uint16 requestConfirmations, uint16 winnersCount)
         external
         onlyOwner
         inPhase(Phase.Enter)
     {
-        require(entrants.length >= MAX_WINNERS, "need >= 50 entrants");
+        require(vrfRequestId == 0, "draw already requested");
+        require(winnersCount > 0, "winners=0");
+        require(winnersCount <= 50, "winners too high");
+        require(winnersCount <= entrants.length, "not enough entrants");
+
+        winnersTarget = winnersCount;
         phase = Phase.DrawRequested;
-        vrfRequestId = coordinator.requestRandomWords(
-            VRFV2PlusClient.RandomWordsRequest({
-                keyHash: keyHash,
-                subId: vrfSubId,
-                requestConfirmations: requestConfirmations,
-                callbackGasLimit: callbackGasLimit,
-                numWords: 1,
-                extraArgs: VRFV2PlusClient._argsToBytes(
-                    VRFV2PlusClient.ExtraArgsV1({nativePayment: true}) // Pay with native token
-                )
-            })
-        );
+        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: true}));
+        (vrfRequestId,) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
         emit DrawRequested(vrfRequestId);
     }
 
-    function fulfillRandomWords(uint256, /*requestId*/ uint256[] calldata randomWords) internal virtual override {
+    function fulfillRandomWords(uint256, /*_requestId*/ uint256[] memory _randomWords) internal override {
         require(phase == Phase.DrawRequested, "phase");
-        randomSeed = randomWords[0];
+        randomSeed = _randomWords[0];
         _selectWinners(randomSeed);
         phase = Phase.Drawn;
         emit Drawn(randomSeed);
@@ -115,10 +102,9 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
         uint256 n = entrants.length;
         uint256 picked = 0;
         uint256 i = 0;
+        winners = new address[](winnersTarget);
 
-        winners = new address[](MAX_WINNERS);
-
-        while (picked < MAX_WINNERS) {
+        while (picked < winnersTarget) {
             address candidate = entrants[uint256(keccak256(abi.encode(seed, i))) % n];
             if (!winnerMap[candidate]) {
                 winnerMap[candidate] = true;
@@ -141,7 +127,15 @@ contract Raffle50 is ReentrancyGuard, VRFConsumerBaseV2Plus {
         emit Claimed(msg.sender);
     }
 
-    function setVrfSubId(uint256 subId) external onlyOwner {
-        vrfSubId = subId;
+    event Funded(address indexed from, uint256 amount);
+
+    receive() external payable {
+        emit Funded(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external onlyOwner {
+        require(amount <= address(this).balance, "insufficient balance");
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "withdraw failed");
     }
 }
