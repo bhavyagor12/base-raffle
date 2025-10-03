@@ -528,7 +528,7 @@ const ABI = [
 
 async function main() {
   const { viem } = await network.connect({
-    network: "baseSepolia",
+    network: "base",
     chainType: "l2",
   });
 

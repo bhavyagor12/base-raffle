@@ -13,11 +13,39 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const appUrl = `https://based-india-giveaway.vercel.app`;
+
+// frame preview metadata
+const appName = "ReplyGuy";
+const splashImageUrl = `${appUrl}/base_blue.svg`;
+const iconUrl = `${appUrl}/base_blue.svg`;
+
+const framePreviewMetadata = {
+  version: "next",
+  imageUrl: `${appUrl}/base_blue.svg`,
+  iconUrl,
+  heroImageUrl: `${appUrl}/base_blue.svg`,
+  button: {
+    title: "BATW India",
+    action: {
+      type: "launch_frame",
+      name: appName,
+      url: appUrl,
+      splashImageUrl,
+      iconUrl,
+      splashBackgroundColor: "#0000ff",
+    },
+  },
+};
+
 export const metadata: Metadata = {
   title: "BATW India",
   description: "A onsite giveaway app for BATW India",
   icons: {
     icon: "/base_blue.svg",
+  },
+  other: {
+    "fc:frame": JSON.stringify(framePreviewMetadata),
   },
 };
 
