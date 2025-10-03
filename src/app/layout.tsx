@@ -17,14 +17,14 @@ const appUrl = `https://based-india-giveaway.vercel.app`;
 
 // frame preview metadata
 const appName = "ReplyGuy";
-const splashImageUrl = `${appUrl}/base_blue.svg`;
-const iconUrl = `${appUrl}/base_blue.svg`;
+const splashImageUrl = `${appUrl}/crown.png`;
+const iconUrl = `${appUrl}/crown.png`;
 
 const framePreviewMetadata = {
   version: "next",
-  imageUrl: `${appUrl}/base_blue.svg`,
+  imageUrl: `${appUrl}/crown.png`,
   iconUrl,
-  heroImageUrl: `${appUrl}/base_blue.svg`,
+  heroImageUrl: `${appUrl}/crown.png`,
   button: {
     title: "BATW India",
     action: {
