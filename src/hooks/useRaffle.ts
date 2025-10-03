@@ -72,6 +72,27 @@ export function useRaffle() {
     chainId: CHAIN_ID,
   });
 
+  // ---- Refetch on tx success ----
+  const refetchAll = React.useCallback(() => {
+    phaseQuery.refetch();
+    entrantQuery.refetch();
+    winnerQuery.refetch();
+    entrantsCountQuery.refetch();
+    winnersQuery.refetch();
+    winnersTargetQuery.refetch();
+    randomSeedQuery.refetch();
+    vrfRequestIdQuery.refetch();
+  }, [
+    phaseQuery,
+    entrantQuery,
+    winnerQuery,
+    entrantsCountQuery,
+    winnersQuery,
+    winnersTargetQuery,
+    randomSeedQuery,
+    vrfRequestIdQuery,
+  ]);
+
   const {
     writeContract,
     data: txHash,
@@ -96,7 +117,8 @@ export function useRaffle() {
       functionName: "enter",
       chainId: CHAIN_ID,
     });
-  }, [guard, writeContract]);
+    refetchAll();
+  }, [guard, writeContract, refetchAll]);
 
   const claim = React.useCallback(() => {
     guard();
@@ -107,27 +129,6 @@ export function useRaffle() {
       chainId: CHAIN_ID,
     });
   }, [guard, writeContract]);
-
-  // ---- Refetch on tx success ----
-  const refetchAll = React.useCallback(() => {
-    phaseQuery.refetch();
-    entrantQuery.refetch();
-    winnerQuery.refetch();
-    entrantsCountQuery.refetch();
-    winnersQuery.refetch();
-    winnersTargetQuery.refetch();
-    randomSeedQuery.refetch();
-    vrfRequestIdQuery.refetch();
-  }, [
-    phaseQuery,
-    entrantQuery,
-    winnerQuery,
-    entrantsCountQuery,
-    winnersQuery,
-    winnersTargetQuery,
-    randomSeedQuery,
-    vrfRequestIdQuery,
-  ]);
 
   React.useEffect(() => {
     if (wait.isSuccess) refetchAll();

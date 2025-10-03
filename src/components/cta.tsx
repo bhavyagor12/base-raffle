@@ -1,14 +1,14 @@
 import { useRaffle } from "@/hooks/useRaffle";
-import { useAccount } from "wagmi";
 import { Spinner } from "./spinner";
-import { ADMIN_FIDS, CHAIN_ID, Phase } from "@/lib/contract";
+import { ADMIN_FIDS, Phase } from "@/lib/contract";
 import { Button } from "./ui/button";
-import { Callout } from "./callout";
 import { useMiniApp } from "@neynar/react";
+import { Card, CardContent } from "./ui/card";
+import Image from "next/image";
+import { WalletCTA } from "./wallet-cta";
 
 export function CTASection() {
   const { isSDKLoaded, context } = useMiniApp();
-  const { chainId } = useAccount();
   const {
     isConnected,
     phase,
@@ -25,7 +25,7 @@ export function CTASection() {
 
   if (!user) return null;
 
-  if (ADMIN_FIDS.includes(user.fid)) return null; // dont allow admin
+  if (ADMIN_FIDS.includes(user.fid)) return null;
 
   if (loading)
     return (
@@ -35,45 +35,112 @@ export function CTASection() {
     );
 
   if (!isConnected) {
-    return null;
-  }
-
-  if (chainId && chainId !== CHAIN_ID) {
     return (
-      <p className="text-center text-xs text-amber-600">
-        Switch to Base Sepolia ({CHAIN_ID}).
-      </p>
+      <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+        <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+          <Image
+            src="/mystery.svg"
+            alt="Mystery Box"
+            width={200}
+            height={200}
+          />
+          <div className="text-white mt-4">
+            <p className="text-[20px] leading-tight opacity-90">
+              Connect your wallet to
+            </p>
+            <p className="text-[20px] font-semibold leading-snug mt-2">
+              participate in the Giveaway.
+            </p>
+          </div>
+          <WalletCTA />
+        </CardContent>
+      </Card>
     );
   }
-
   if (phase === Phase.Enter) {
     if (alreadyEntered)
       return (
-        <p className="text-center text-sm">Wait for the exciting results</p>
+        <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+          <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+            <Image src="/tick.svg" alt="Tick" width={200} height={200} />
+            <div className="text-white mt-4">
+              <p className="text-[20px] leading-tight opacity-90">Good luck!</p>
+              <p className="text-[20px] font-semibold leading-snug mt-2">
+                You have entered the giveaway.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       );
     return (
-      <Button className="w-full" onClick={() => enter([])} disabled={txPending}>
-        {txPending ? <Spinner label="Submitting" /> : "Enter the Giveaway"}
-      </Button>
+      <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+        <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+          <Image
+            src="/mystery.svg"
+            alt="Mystery Box"
+            width={220}
+            height={220}
+          />
+          <div className="text-white mt-4">
+            <p className="text-[20px] leading-tight opacity-90">
+              Here is your chance to
+            </p>
+            <p className="text-[20px] font-semibold leading-snug">
+              win the <span className="font-bold">Give Away.</span>
+            </p>
+          </div>
+          <Button
+            className="w-[80%] bg-white text-base-blue mt-8"
+            onClick={() => enter()}
+            disabled={txPending}
+          >
+            {txPending ? <Spinner label="Submitting" /> : "Enter the Giveaway"}
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
   if (phase === Phase.DrawRequested) {
     return (
-      <p className="flex flex-col text-center text-lg">
-        Results will be shown soon!
-        <span> Till then Stay Based!</span>
-      </p>
+      <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+        <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+          <Image src="/time.svg" alt="Time" width={160} height={160} />
+          <div className="text-white mt-4">
+            <p className="text-[20px] leading-tight opacity-90">Stay tuned!</p>
+            <p className="text-[20px] font-semibold leading-snug mt-2">
+              Results will be out soon.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return isWinner ? (
-    <Callout tone="success" title="Congrats!">
-      You won. 🎉 Go claim your prize!
-    </Callout>
+    <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+      <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+        <Image src="/crown.svg" alt="Crown" width={200} height={200} />
+        <div className="text-white mt-4">
+          <p className="text-[20px] leading-tight opacity-90">
+            Congratulations!
+          </p>
+          <p className="text-[20px] font-semibold leading-snug mt-2">
+            You won, go claim your prize.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   ) : (
-    <Callout tone="neutral" title="Better luck next time">
-      Results are out. Looks like you didn’t win this time.
-    </Callout>
+    <Card className="relative w-[100%] rounded-2xl border-0 shadow-lg overflow-hidden bg-base-blue">
+      <CardContent className="relative z-10 p-4 flex flex-col items-center text-center gap-3">
+        <Image src="/game.svg" alt="Game" width={160} height={160} />
+        <div className="text-white mt-4">
+          <p className="text-[24px] leading-tight opacity-90">
+            Better luck next time.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
