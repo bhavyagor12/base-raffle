@@ -90,7 +90,7 @@ export function CTASection() {
             </p>
           </div>
           <Button
-            className="w-[80%] bg-white text-base-blue mt-8"
+            className="w-[80%] bg-white text-base-blue mt-8 hover:bg-white"
             onClick={() => enter()}
             disabled={txPending}
           >

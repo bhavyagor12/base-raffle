@@ -532,14 +532,13 @@ async function main() {
     chainType: "l2",
   });
 
-  const publicClient = await viem.getPublicClient();
-  const [deployer, alice, bob] = await viem.getWalletClients();
-  const RAFFLE_ADDR = "0x753eB7EAd1f670E8Fe4F67576f20f709A643Ac67";
+  const [deployer] = await viem.getWalletClients();
+  const RAFFLE_ADDR = "0x9C96D09c00FDDabD7d5aBFa5cB0dA6b7075Cef84";
 
-  // deployer.sendTransaction({
-  //   to: RAFFLE_ADDR,
-  //   value: parseEther("0.001"),
-  // });
+  deployer.sendTransaction({
+    to: RAFFLE_ADDR,
+    value: parseEther("0.001"),
+  });
   //
   // const balance = await publicClient.readContract({
   //   address: RAFFLE_ADDR,
@@ -591,12 +590,12 @@ async function main() {
   // });
   // console.log("Randomness requested, tx:", txHash);
   // NOTE: VRF fulfill happens async; you can check later:
-  const winners = await publicClient.readContract({
-    address: RAFFLE_ADDR,
-    abi: ABI,
-    functionName: "getWinners",
-  });
-  console.log("Winners:", winners);
+  // const winners = await publicClient.readContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "getWinners",
+  // });
+  // console.log("Winners:", winners);
 }
 
 main().catch((err) => {

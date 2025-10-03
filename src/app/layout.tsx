@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 const appUrl = `https://based-india-giveaway.vercel.app`;
 
 // frame preview metadata
-const appName = "ReplyGuy";
+const appName = "BATW India";
 const splashImageUrl = `${appUrl}/crown.png`;
 const iconUrl = `${appUrl}/crown.png`;
 
