@@ -13,11 +13,12 @@ export function AdminBar() {
   const [winnersCount, setWinnersCount] = useState("");
   const [declaredLocal, setDeclaredLocal] = useState(false);
 
-  const { entrantsCount, loading: raffleLoading, winners, phase } = useRaffle();
-
-  if (!isSDKLoaded || !context) return null;
-  const { user } = context;
-  if (!ADMIN_FIDS.includes(user.fid)) return null;
+  const {
+    entrantsCount,
+    loading: raffleLoading,
+    winners,
+    phase, // assume Phase enum from your hook
+  } = useRaffle();
 
   // On-chain or local-declared states that should disable the button.
   const winnersDeclared = useMemo(() => {
@@ -27,6 +28,10 @@ export function AdminBar() {
       (winners?.length ?? 0) > 0;
     return onchainDeclared || declaredLocal;
   }, [phase, winners, declaredLocal]);
+
+  if (!isSDKLoaded || !context) return null;
+  const { user } = context;
+  if (!ADMIN_FIDS.includes(user.fid)) return null;
 
   const handleRequestDraw = async () => {
     const count = parseInt(winnersCount, 10);
