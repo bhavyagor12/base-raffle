@@ -24,10 +24,6 @@ const mainnetPublicClient = createPublicClient({
   transport: http(mainnet_rpc),
 });
 
-const DEFAULT_REQUEST_CONFIRMATIONS = 5;
-
-const MAX_CALLBACK_GAS = 2_500_000;
-
 export async function requestDraw({
   winnersCount,
   is_testnet = false,
@@ -35,15 +31,15 @@ export async function requestDraw({
   const account = privateKeyToAccount(privateKey);
   const walletClient = createWalletClient({
     account,
-    chain: is_testnet ? baseSepolia : base,
-    transport: http(is_testnet ? testnet_rpc : mainnet_rpc),
+    chain: base,
+    transport: http(mainnet_rpc),
   });
 
   const hash = await walletClient.writeContract({
     address: CONTRACT_ADDRESS,
     abi: RAFFLE_ABI,
     functionName: "requestRandomness",
-    args: [MAX_CALLBACK_GAS, DEFAULT_REQUEST_CONFIRMATIONS, winnersCount],
+    args: [500000, 3, winnersCount],
   });
   let receipt;
   if (is_testnet) {

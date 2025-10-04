@@ -1,6 +1,6 @@
 export const CHAIN_ID = 8453;
 export const CONTRACT_ADDRESS =
-  "0x8423a0a6567E56cbE7324aD63fdb94c45e306445" as const;
+  "0x39553310Ab590B27a0774a3A13E99d433C5e4c69" as const;
 export const ADMIN_ADDRESS = "" as const;
 
 export const ADMIN_FIDS = [8010];

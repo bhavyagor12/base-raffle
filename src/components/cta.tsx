@@ -7,7 +7,6 @@ import {
   Phase,
   RAFFLE_ABI,
 } from "@/lib/contract";
-import { Button } from "./ui/button";
 import { useMiniApp } from "@neynar/react";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
@@ -22,15 +21,8 @@ import { ContractFunctionParameters } from "viem";
 
 export function CTASection() {
   const { isSDKLoaded, context } = useMiniApp();
-  const {
-    isConnected,
-    phase,
-    alreadyEntered,
-    isWinner,
-    enter,
-    loading,
-    txPending,
-  } = useRaffle();
+  const { isConnected, phase, alreadyEntered, isWinner, loading, refetchAll } =
+    useRaffle();
 
   if (!isSDKLoaded || !context) return null;
 
@@ -113,6 +105,7 @@ export function CTASection() {
                 args: [],
               } as ContractFunctionParameters,
             ]}
+            onSuccess={refetchAll}
           >
             <TransactionButton
               className="w-full bg-white text-base-blue mt-8 hover:bg-white"

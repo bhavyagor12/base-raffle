@@ -1,23 +1,32 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { requestDraw } from "@/lib/admin";
 import { useMiniApp } from "@neynar/react";
 import { useRaffle } from "@/hooks/useRaffle";
-import { ADMIN_FIDS } from "@/lib/contract";
+import { ADMIN_FIDS, Phase } from "@/lib/contract";
 
 export function AdminBar() {
   const { isSDKLoaded, context } = useMiniApp();
   const [loading, setLoading] = useState(false);
   const [winnersCount, setWinnersCount] = useState("");
+  const [declaredLocal, setDeclaredLocal] = useState(false);
 
-  const { entrantsCount, loading: raffleLoading } = useRaffle();
+  const { entrantsCount, loading: raffleLoading, winners, phase } = useRaffle();
 
   if (!isSDKLoaded || !context) return null;
-
   const { user } = context;
   if (!ADMIN_FIDS.includes(user.fid)) return null;
+
+  // On-chain or local-declared states that should disable the button.
+  const winnersDeclared = useMemo(() => {
+    const onchainDeclared =
+      phase === Phase.DrawRequested ||
+      phase === Phase.Drawn ||
+      (winners?.length ?? 0) > 0;
+    return onchainDeclared || declaredLocal;
+  }, [phase, winners, declaredLocal]);
 
   const handleRequestDraw = async () => {
     const count = parseInt(winnersCount, 10);
@@ -33,6 +42,10 @@ export function AdminBar() {
         is_testnet: false,
       });
       console.log("Draw requested. Tx receipt:", receipt);
+      // Optimistic UI: immediately mark as declared and lock UI.
+      setDeclaredLocal(true);
+      // Optional: clear input
+      // setWinnersCount("");
     } catch (err) {
       console.error("Failed to request draw:", err);
     } finally {
@@ -40,10 +53,16 @@ export function AdminBar() {
     }
   };
 
+  const winnersLen = winners?.length ?? 0;
+
   return (
     <div className="mt-4 space-y-3">
       <div className="text-sm text-muted-foreground">
-        Current entrants: {raffleLoading ? "Loading..." : entrantsCount}
+        {winnersDeclared ? (
+          <>Winners declared: {winnersLen > 0 ? winnersLen : "pending..."}</>
+        ) : (
+          <>Current entrants: {raffleLoading ? "Loading..." : entrantsCount}</>
+        )}
       </div>
 
       <Input
@@ -52,15 +71,20 @@ export function AdminBar() {
         value={winnersCount}
         onChange={(e) => setWinnersCount(e.target.value)}
         min={1}
+        disabled={winnersDeclared || loading || raffleLoading}
       />
 
       <Button
         variant="secondary"
         className="w-full"
         onClick={handleRequestDraw}
-        disabled={loading || raffleLoading}
+        disabled={winnersDeclared || loading || raffleLoading}
       >
-        {loading ? "Declaring..." : "Declare Results"}
+        {winnersDeclared
+          ? "Results Declared"
+          : loading
+            ? "Declaring..."
+            : "Declare Results"}
       </Button>
     </div>
   );

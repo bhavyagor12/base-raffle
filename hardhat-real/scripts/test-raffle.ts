@@ -1,5 +1,6 @@
 import { network } from "hardhat";
 import { parseEther } from "viem";
+import { base } from "viem/chains";
 
 const ABI = [
   {
@@ -531,9 +532,9 @@ async function main() {
     network: "base",
     chainType: "l2",
   });
-
+  const publicClient = await viem.getPublicClient();
   const [deployer] = await viem.getWalletClients();
-  const RAFFLE_ADDR = "0x8423a0a6567E56cbE7324aD63fdb94c45e306445";
+  const RAFFLE_ADDR = "0x39553310Ab590B27a0774a3A13E99d433C5e4c69";
 
   deployer.sendTransaction({
     to: RAFFLE_ADDR,
@@ -578,7 +579,7 @@ async function main() {
   //
   // const callbackGasLimit = 500000;
   // const requestConfirmations = 3;
-  // const winnersCount = 1;
+  // const winnersCount = 2;
   //
   // console.log("Deployer requesting randomness...");
   //
@@ -588,6 +589,19 @@ async function main() {
   //   functionName: "requestRandomness",
   //   args: [callbackGasLimit, requestConfirmations, winnersCount],
   // });
+
+  // const withdraw = await deployer.writeContract({
+  //   address: RAFFLE_ADDR,
+  //   abi: ABI,
+  //   functionName: "withdraw",
+  //   args: [parseEther("0.001998048518544749")],
+  // });
+  //
+  // const receipt = await publicClient.waitForTransactionReceipt({
+  //   hash: withdraw,
+  // });
+  // console.log("Transaction mined in block", receipt.blockNumber);
+
   // console.log("Randomness requested, tx:", txHash);
   // NOTE: VRF fulfill happens async; you can check later:
   // const winners = await publicClient.readContract({
