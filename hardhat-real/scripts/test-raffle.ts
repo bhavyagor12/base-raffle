@@ -533,7 +533,7 @@ async function main() {
   });
 
   const [deployer] = await viem.getWalletClients();
-  const RAFFLE_ADDR = "0x9C96D09c00FDDabD7d5aBFa5cB0dA6b7075Cef84";
+  const RAFFLE_ADDR = "0x8423a0a6567E56cbE7324aD63fdb94c45e306445";
 
   deployer.sendTransaction({
     to: RAFFLE_ADDR,
